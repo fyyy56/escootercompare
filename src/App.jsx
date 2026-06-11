@@ -16,7 +16,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBrand, setActiveBrand] = useState('all');
   const [filters, setFilters] = useState(EMPTY_FILTERS);
-  const [selectedIds, setSelectedIds] = useState([catalog]);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
 
   const filteredScooters = useMemo(
