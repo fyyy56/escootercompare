@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCOOTER COMPARE — сравнение электросамокатов 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e14; --surface:#141823; --surface2:#1b202e; --border:#262c3d; --border2:#363d52;
+  --text:#eef0f5; --muted:#8088a0; --accent:#5b8cff; --accent-l:rgba(91,140,255,.12);
+  --green:#3ddc84; --red:#ff5d6c; --yellow:#ffc857; --orange:#ff9f5b;
+  --shadow:0 2px 8px rgba(0,0,0,.35); --shadow-md:0 8px 24px rgba(0,0,0,.45);
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1c2640 0%,#0c0e14 100%);border-bottom:1px solid var(--border);padding:20px 28px}
+.hero-inner{max-width:1900px;margin:0 auto;position:relative;display:flex;align-items:center;justify-content:center;min-height:40px}
+.hero-brand{display:flex;align-items:center;gap:12px}
+.hero-icon{width:32px;height:32px;object-fit:contain;filter:brightness(0) invert(1)}
+.hero-brand h1{font-size:22px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#fff,#9db4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.search-box{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:6px;padding:8px 14px;flex-shrink:0;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--accent)}
+.search-icon{font-size:15px;color:var(--muted)}
+.search-box input{background:transparent;border:none;outline:none;color:var(--text);font-size:13px;width:200px}
+.search-box input::placeholder{color:var(--muted)}
+
+/* BRAND BAR */
+.brand-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:18px 28px}
+.brand-bar-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.brand-chips{display:flex;gap:12px;flex-wrap:wrap}
+.brand-chip{display:flex;align-items:center;gap:14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;padding:14px 26px;cursor:pointer;transition:all .15s;min-width:200px}
+.brand-chip:hover{border-color:var(--border2)}
+.brand-chip.active{border-color:var(--accent);background:var(--accent-l)}
+.brand-logo-box{width:54px;height:54px;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.brand-logo-box img{width:100%;height:100%;object-fit:contain;padding:6px}
+.brand-logo-box.text{font-weight:900;font-size:16px;color:#0c0e14;letter-spacing:-.5px}
+.brand-meta{display:flex;flex-direction:column;gap:3px}
+.brand-name{font-size:16px;font-weight:800;color:var(--text)}
+.brand-count{font-size:12px;color:var(--muted)}
+.brand-chip.active .brand-count{color:var(--accent)}
+
+/* VERTICAL FILTERS (sidebar) */
+.vfilter-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;position:relative}
+.filter-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.range-wrap{display:flex;align-items:center;gap:6px}
+.range-input{width:100%;padding:7px 9px;border:1px solid var(--border2);border-radius:6px;font-size:12px;color:var(--text);background:var(--surface2)}
+.range-input:focus{outline:none;border-color:var(--accent)}
+.range-sep{font-size:11px;color:var(--muted)}
+
+/* expandable advanced filters */
+.adv-toggle{background:var(--surface2);border:1.5px solid var(--border2);border-radius:6px;padding:8px 14px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.adv-toggle:hover,.adv-toggle.open{border-color:var(--accent);color:var(--accent)}
+.adv-toggle .arrow{transition:transform .2s;font-size:9px}
+.adv-toggle.open .arrow{transform:rotate(180deg)}
+.adv-popup{display:none;position:relative;margin-top:8px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:6px;padding:12px;z-index:40}
+.adv-popup.open{display:block}
+.adv-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.adv-row:last-child{margin-bottom:0}
+.adv-row .filter-lbl{min-width:60px}
+.adv-row .range-input{width:80px}
+
+.btn-reset-filter{background:transparent;border:1px solid var(--border2);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s}
+.btn-reset-filter:hover{color:var(--red);border-color:var(--red)}
+.filter-results{font-size:12px;color:var(--muted)}
+
+/* MAIN LAYOUT */
+main{padding:20px 28px 48px;max-width:1900px;margin:0 auto}
+.layout{display:grid;grid-template-columns:1fr 260px;gap:18px;align-items:start}
+.sidebar{position:sticky;top:14px;order:2}
+.sidebar-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:18px;box-shadow:var(--shadow)}
+.sidebar-title{font-size:12px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.sidebar-title::before{content:'⚙';font-size:14px}
+.sidebar-sub{font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.4}
+
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.sidebar{position:static;order:-1}}
+
+/* CATALOG GRID */
+.catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-content:start}
+.no-results{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px;grid-column:1/-1}
+
+/* CARD */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;overflow:hidden;transition:all .2s;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
+.card.selected{border-color:var(--accent)}
+
+.card-photo{height:180px;background:linear-gradient(135deg,#1b202e,#11151f);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.card-photo img{max-height:150px;max-width:88%;object-fit:contain;transition:transform .3s;filter:drop-shadow(0 8px 16px rgba(0,0,0,.4))}
+.card:hover .card-photo img{transform:scale(1.04)}
+.photo-brand{position:absolute;top:10px;left:10px;background:#fff;border-radius:4px;padding:5px 8px;display:flex;align-items:center;justify-content:center;height:26px}
+.photo-brand img{height:16px;object-fit:contain}
+.photo-brand span{font-size:11px;font-weight:900;color:#0c0e14;letter-spacing:-.3px}
+.photo-tier{position:absolute;top:10px;right:10px;font-size:9px;font-weight:800;padding:5px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:.6px}
+.tier-entry{background:rgba(128,136,160,.2);color:#b0b6c8}
+.tier-mid{background:rgba(61,220,132,.15);color:var(--green)}
+.tier-high{background:rgba(255,159,91,.15);color:var(--orange)}
+.tier-super{background:rgba(255,93,108,.15);color:var(--red)}
+
+.card-hd{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.card-series{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.card-name{font-size:18px;font-weight:800;letter-spacing:-.3px;line-height:1.2}
+
+.key-specs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+.ks{padding:12px 8px;border-right:1px solid var(--border);text-align:center}
+.ks:last-child{border-right:none}
+.ks-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.ks-val{font-size:16px;font-weight:800;line-height:1.1;color:var(--text)}
+.ks-u{font-size:10px;font-weight:400;color:var(--muted)}
+
+.extra{padding:12px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.er{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.er-l{font-size:11px;color:var(--muted)}
+.er-v{font-size:11px;font-weight:700;color:var(--text);text-align:right;max-width:60%}
+
+.repair{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.repair-lbl{font-size:11px;color:var(--muted)}
+.stars{display:flex;gap:3px;align-items:center}
+.star{width:14px;height:14px;border-radius:3px;background:var(--border)}
+.repair-txt{font-size:10px;font-weight:700;margin-left:6px}
+
+.price-row{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.price-lbl{font-size:11px;color:var(--muted)}
+.price-val{font-size:18px;font-weight:900;letter-spacing:-.4px;color:var(--accent)}
+
+.cons{padding:12px 16px;flex:1}
+.cons-hd{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.cons-hd::before{content:'⚠';font-size:11px;color:var(--yellow)}
+.cons-list{list-style:none}
+.cons-list li{font-size:11px;color:#a8aec2;line-height:1.5;padding:2px 0 2px 13px;position:relative}
+.cons-list li::before{content:'·';position:absolute;left:0;color:var(--yellow);font-size:15px;line-height:1.3}
+
+.add-btn{width:calc(100% - 32px);margin:0 16px 14px;padding:10px;border:1.5px solid var(--border2);border-radius:6px;background:transparent;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
+.add-btn.added{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
+.add-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* FLOATING COMPARE BAR */
+.compare-bar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120%);display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--accent);border-radius:8px;padding:12px 18px;box-shadow:var(--shadow-md);z-index:90;transition:transform .25s ease}
+.compare-bar.show{transform:translateX(-50%) translateY(0)}
+.compare-bar-label{font-size:13px;color:var(--text)}
+.compare-bar-label b{color:var(--accent)}
+.btn-cb{border:none;border-radius:6px;padding:9px 18px;font-size:13px;font-weight:800;cursor:pointer;background:var(--accent);color:#0c0e14;transition:all .15s}
+.btn-cb:hover{background:#82a6ff}
+.btn-cb:disabled{background:var(--border2);color:var(--muted);cursor:not-allowed}
+.btn-ghost-cb{border:1px solid var(--border2);border-radius:6px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s}
+.btn-ghost-cb:hover{border-color:var(--red);color:var(--red)}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;overflow-y:auto;padding:32px 14px;backdrop-filter:blur(4px)}
+.overlay.open{display:block}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;max-width:1200px;margin:0 auto;box-shadow:var(--shadow-md);overflow:hidden}
+.modal-hd{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.modal-hd h3{font-size:16px;font-weight:800}
+.btn-close{background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--text);font-weight:700}
+.btn-close:hover{border-color:var(--red);color:var(--red)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:12px 16px;text-align:left;background:var(--surface2);border-bottom:2px solid var(--border);font-weight:800;white-space:nowrap;color:var(--text)}
+thead th:first-child{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;min-width:150px}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--surface2)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:11px 16px}
+tbody td:first-child{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.best{color:var(--green);font-weight:800}
+.worst{color:var(--yellow)}
+.cons-cell{font-size:11px;color:#a8aec2;line-height:1.6}
+
+footer{text-align:center;padding:22px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);background:var(--surface)}
+
+@media(max-width:900px){.catalog{grid-template-columns:1fr}main,.hero-inner,.brand-bar{padding-left:14px;padding-right:14px}.hero-inner{flex-direction:column;gap:12px}.search-box{position:static;transform:none;width:100%}.search-box input{width:100%}}
+@media(min-width:901px) and (max-width:1400px){.catalog{grid-template-columns:repeat(2,1fr)}}
+/* ─── КИНЕМАТОГРАФИЧНЫЙ ЗУМ ПО КЛИКУ/ТАПУ (ДЛЯ МОБИЛЬНЫХ И ПК) ─── */
+
+/* 1. Ограничиваем карточку, чтобы картинка не вылезала за её скругленные края */
+.card {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Разрешаем картинке двигаться вниз + настраиваем быстрый возврат черточки */
+.card-photo {
+  overflow: visible !important;
+  transition: border-bottom-color 0.25s ease 0s !important;
+}
+
+/* 2. Базовое состояние для текста и плашек (мгновенный возврат при закрытии) */
+.card > *:not(.card-photo),
+.photo-brand,
+.photo-tier {
+  transition: opacity 0.25s ease 0s !important;
+  opacity: 1 !important;
+}
+
+/* Базовое состояние для картинки самоката */
+.card-photo img {
+  transition: transform 0.3s ease 0s, filter 0.3s ease 0s !important;
+  transform-origin: center 15% !important; /* Точка роста: самокат растет от руля преимущественно ВНИЗ */
+  position: relative;
+  z-index: 10;
+}
+
+
+/* ─── МАГИЯ АКТИВАЦИИ ПРИ КЛАССЕ .zoomed (ПО КЛИКУ) ─── */
+
+/* Растворяем разделительную черточку */
+.card.zoomed .card-photo {
+  border-bottom-color: transparent !important;
+  transition: border-bottom-color 0.8s ease 0s !important; /* Анимация 0.8с сразу после клика */
+}
+
+/* Плавное исчезновение ВСЕГО текста, логотипов и ярлыков в карточке */
+.card.zoomed > *:not(.card-photo),
+.card.zoomed .photo-brand,
+.card.zoomed .photo-tier {
+  opacity: 0 !important;
+  pointer-events: none; /* Запрещаем кликать по невидимым кнопкам сравнения, пока самокат развернут */
+  transition: opacity 0.8s ease 0s !important; /* Исчезает за 0.8с */
+}
+
+/* Пропорциональное увеличение самоката на всю карточку */
+.card.zoomed .card-photo img {
+  transition: transform 0.8s ease 0s !important; /* Расширяется ровно за 0.8с */
+  transform: scale(2.7) translateY(45px) !important; /* Увеличиваем в 2.7 раза и центрируем */
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6)) !important; /* Красивая тень под силуэтом */}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-brand">
+      <img class="hero-icon" src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="">
+      <h1>ESCOOTER COMPARE</h1>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Поиск по названию..." oninput="applyFilters()">
+    </div>
+  </div>
+</div>
+
+<div class="brand-bar">
+  <div class="brand-bar-title">Бренд</div>
+  <div class="brand-chips" id="brandChips"></div>
+</div>
+
+<main>
+  <div class="layout">
+    <div class="catalog" id="catalog"></div>
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title">Фильтры</div>
+        <div class="sidebar-sub">Подбери самокаты по параметрам</div>
+
+        <div class="vfilter-group">
+          <span class="filter-lbl">Мощность (W)</span>
+          <div class="range-wrap">
+            <input class="range-input" type="number" id="fPowerMin" placeholder="от" oninput="applyFilters()">
+            <span class="range-sep">—</span>
+            <input class="range-input" type="number" id="fPowerMax" placeholder="до" oninput="applyFilters()">
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <span class="filter-lbl">Скорость (км/ч)</span>
+          <div class="range-wrap">
+            <input class="range-input" type="number" id="fSpeedMin" placeholder="от" oninput="applyFilters()">
+            <span class="range-sep">—</span>
+            <input class="range-input" type="number" id="fSpeedMax" placeholder="до" oninput="applyFilters()">
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <span class="filter-lbl">Вес (кг)</span>
+          <div class="range-wrap">
+            <input class="range-input" type="number" id="fWeightMin" placeholder="от" oninput="applyFilters()">
+            <span class="range-sep">—</span>
+            <input class="range-input" type="number" id="fWeightMax" placeholder="до" oninput="applyFilters()">
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <span class="filter-lbl">Пробег (км)</span>
+          <div class="range-wrap">
+            <input class="range-input" type="number" id="fRangeMin" placeholder="от" oninput="applyFilters()">
+            <span class="range-sep">—</span>
+            <input class="range-input" type="number" id="fRangeMax" placeholder="до" oninput="applyFilters()">
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <div class="adv-toggle" id="advToggleV" onclick="toggleAdv('advPopupV',this)">
+            Напряжение АКБ <span class="arrow">▾</span>
+          </div>
+          <div class="adv-popup" id="advPopupV">
+            <div class="adv-row">
+              <span class="filter-lbl">от</span>
+              <input class="range-input" type="number" id="fVoltMin" placeholder="36" oninput="applyFilters()">
+            </div>
+            <div class="adv-row">
+              <span class="filter-lbl">до</span>
+              <input class="range-input" type="number" id="fVoltMax" placeholder="72" oninput="applyFilters()">
+            </div>
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <div class="adv-toggle" id="advToggleC" onclick="toggleAdv('advPopupC',this)">
+            Ёмкость, Wh <span class="arrow">▾</span>
+          </div>
+          <div class="adv-popup" id="advPopupC">
+            <div class="adv-row">
+              <span class="filter-lbl">от</span>
+              <input class="range-input" type="number" id="fCapMin" placeholder="200" oninput="applyFilters()">
+            </div>
+            <div class="adv-row">
+              <span class="filter-lbl">до</span>
+              <input class="range-input" type="number" id="fCapMax" placeholder="2200" oninput="applyFilters()">
+            </div>
+          </div>
+        </div>
+
+        <div class="vfilter-group">
+          <div class="adv-toggle" id="advToggleR" onclick="toggleAdv('advPopupR',this)">
+            Ремонтопригодность <span class="arrow">▾</span>
+          </div>
+          <div class="adv-popup" id="advPopupR">
+            <div class="adv-row">
+              <span class="filter-lbl">мин. уровень</span>
+              <input class="range-input" type="number" id="fRepairMin" placeholder="1–5" min="1" max="5" oninput="applyFilters()">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-reset-filter" onclick="resetFilters()" style="width:100%;margin-top:6px">✕ Сбросить фильтры</button>
+        <div class="filter-results" id="filterResults" style="margin-top:10px;text-align:center"></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="compare-bar" id="compareBar">
+  <span class="compare-bar-label">Выбрано: <b id="compareCount">0</b></span>
+  <button class="btn-ghost-cb" onclick="clearAll()">Очистить</button>
+  <button class="btn-cb" id="btnCompare" onclick="openModal()" disabled>Сравнить →</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>⚖ Сравнение характеристик</h3>
+      <button class="btn-close" onclick="closeModal()">✕ Закрыть</button>
+    </div>
+    <div class="tw"><table id="cmpTable"></table></div>
+  </div>
+</div>
+
+<footer>Данные: официальные сайты Segway, Xiaomi (mi.com), KuKirin EU, Kugoo · отзывы Reddit, Tom's Guide, Electric Scooter Guide · 2026</footer>
+
+<script>
+const BRANDS = {
+  segway: { name:'Segway Ninebot', logo:'https://superbiker.hk/cdn/shop/collections/40102D5D-B4FF-465B-BC58-0C4436B1A5DA.jpg?v=1716208563' },
+  xiaomi: { name:'Xiaomi', logo:'https://e7.pngegg.com/pngimages/234/461/png-clipart-xiaomi-mi-1-graphics-logo-xiaomi-logo-text-trademark.png' },
+  kugoo:  { name:'Kugoo', logo:'https://www.velodrive.ru/upload/iblock/a27/logo.png' },
+  kukirin:{ name:'KuKirin', logo:'https://cdn.shopify.com/s/files/1/0721/5743/0039/files/d9f56d90579743f0673e03a3b9bd7ec6.png?v=1689297444&width=400' },
+  kaabo:  { name:'Kaabo', logo:'https://www.repairsys.eu/wp-content/uploads/2023/04/Logo-Kaabo_1-1024x260.png.webp' },
+  dualtron:{ name:'Dualtron', logo:'https://www.dualtronnordic.com/web/image/3279-4cfbe68c/Dlogo.webp' },
+  nami:   { name:'Nami Electric', logo:'https://www.nami-uk.com/wp-content/uploads/2022/11/logo-nami-new-1.webp' },
+  vsett:  { name:'VSETT', logo:'https://www.e-zrider.gr/img/m/1.jpg' },
+  apollo: { name:'Apollo', logo:'https://apolloscooters.co/cdn/shop/files/Squareassets2024_11.png?v=1717623156&width=2048' },
+  niu:    { name:'NIU', logo:'https://shopeu.niu.com/cdn/shop/files/logo.png?v=1643342628&width=500' }
+};
+
+const SCOOTERS = [
+  // ── SEGWAY NINEBOT ──────────────────────────────────────────────────────
+  {id:'g30',brand:'segway',series:'Max-Series',name:'Ninebot Max G30',tier:'mid',tierLabel:'Лучший в своем классе',
+   price:'~$600',priceVal:600,power:'350W',powerPeak:'1080W',powerVal:350,speed:'30',speedVal:30,
+   range:'65',rangeVal:65,weight:'19.1',weightVal:19.1,wheels:'10"',suspension:'Нет',
+   battery:'551Wh',batteryV:'36V',voltVal:36,capVal:551,cells:'Неизвестно',waterproof:'IPX5',load:'100 кг',charge:'~6ч',
+   repair:5,repairTxt:'Отличная',
+   photo:'https://edinco.co.uk/cdn/shop/files/segway-ninebot-max-g30-gen-2-scooter-side-view.png?v=1748967251',
+   cons:['Нет подвески — жёстко на кочках','Шарнир руля — известная проблема','Зарядка ~6ч','Тяжелее аналогов без подвески']},
+  {id:'maxg2',brand:'segway',series:'Max-Series',name:'Ninebot Max G2',tier:'high',tierLabel:'Продвинутый',
+   price:'~$800',priceVal:800,power:'450W',powerPeak:'1200W',powerVal:450,speed:'35',speedVal:35,
+   range:'70',rangeVal:70,weight:'24.6',weightVal:24.6,wheels:'10"',suspension:'Гидравлика 2x',
+   battery:'551Wh',batteryV:'36V',voltVal:36,capVal:551,cells:'Неизвестно',waterproof:'IPX5',load:'120 кг',charge:'~5–6ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://s7ap1.scene7.com/is/image/ninebotstage/assets_segway_cdn_com_Product-Pictures__product_full_MAX-G2-1?dpr=on,3&network=on&fmt=png-alpha',
+   cons:['Требует ухода','Долгая зарядка 5–6ч','Громоздкий','Частые проблемы с ЗУ']},
+  {id:'maxg3',brand:'segway',series:'Max-Series',name:'Ninebot Max G3',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1000',priceVal:1000,power:'800W',powerPeak:'2600W',powerVal:1000,speed:'45',speedVal:45,
+   range:'80',rangeVal:80,weight:'24,6',weightVal:26,wheels:'11"',suspension:'Гидравлика 2х',
+   battery:'614Wh',batteryV:'48V',voltVal:48,capVal:614,cells:'EVE 26E',waterproof:'IPX6',load:'120 кг',charge:'~4ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://segway.imgix.net/media/wysiwyg/max-g3/ninebot-kickscooter-max-g3-left.png',
+   cons:['Слабые елементы','Высокая цена','Мало долгосрочных отзывов','Отсутствие сальников']},
+  {id:'p65',brand:'segway',series:'P-Series',name:'Ninebot P65',tier:'high',tierLabel:'Продвинутый',
+   price:'~$900',priceVal:900,power:'500W',powerPeak:'2000W',powerVal:500,speed:'40',speedVal:40,
+   range:'65',rangeVal:65,weight:'28',weightVal:28,wheels:'10.5"',suspension:'Отсутсвует',
+   battery:'561Wh',batteryV:'48V',voltVal:48,capVal:561,cells:'13s1p Li-Pol',waterproof:'IPX5',load:'120 кг',charge:'~4ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://s7ap1.scene7.com/is/image/ninebotstage/assets_segway_cdn_com_Product-Pictures__product_full_Segway-KickScooter-P65D_Product-picture-7?dpr=on,3&network=on&fmt=png-alpha',
+   cons:['Сомнительная рама','Ненадежная батарея','Реальный пробег ~30–35 км','Отсутствие подвески']},
+  {id:'p100',brand:'segway',series:'P-Series',name:'Ninebot P100S',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1400',priceVal:1400,power:'650W',powerPeak:'3000W',powerVal:650,speed:'48',speedVal:48,
+   range:'100',rangeVal:100,weight:'32.9',weightVal:32.9,wheels:'10.5"',suspension:'Эластомерная',
+   battery:'1086Wh',batteryV:'48V',voltVal:48,capVal:1086,cells:'21700 Li-Ion',waterproof:'IPX5',load:'120 кг',charge:'~7ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://www.segway.la/cdn/shop/products/P100S.40.png?v=1680128589&width=1200',
+   cons:['Огромный вес — 33 кг','Реальный пробег ~50–55 км','Редкая модель в сервисе','Проблема АКБ в холод']},
+  {id:'gt1',brand:'segway',series:'GT-Series',name:'SuperScooter GT1',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1800',priceVal:1800,power:'1400W',powerPeak:'3000W',powerVal:1400,speed:'65',speedVal:60,
+   range:'70',rangeVal:70,weight:'47.6',weightVal:47.6,wheels:'11"',suspension:'Wishbone + маятник',
+   battery:'1008Wh',batteryV:'52V',voltVal:60,capVal:1092,cells:'18650',waterproof:'IPX6',load:'150 кг',charge:'~12ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://www.segway.la/cdn/shop/products/refurbished-segway-gt1-6006793_2048x.png?v=1774547779',
+   cons:['Весит 47 кг — только для езды','Очень доргой ремонт','Огромный размер','Зарядка 12ч одним ЗУ']},
+  {id:'gt2',brand:'segway',series:'GT-Series',name:'SuperScooter GT2',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3000',priceVal:3000,power:'1500W',powerPeak:'3000W',powerVal:1500,speed:'70',speedVal:70,
+   range:'90',rangeVal:90,weight:'50',weightVal:50,wheels:'11"',suspension:'Дуальная + маятник',
+   battery:'1512Wh',batteryV:'52V',voltVal:60,capVal:1512,cells:'18650',waterproof:'IPX6',load:'150 кг',charge:'~8ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://segway.imgix.net/catalog/product/cache/1be073bb625205c2a3aab025b4fe3368/2/1/21.png?auto=format%2Ccompress&dpr=1&q=75&w=700',
+   cons:['$3000+ — не для всех','50 кг — не поднять','Нелегально в ЕС','Обслуживание сложное']},
+  {id:'gt3',brand:'segway',series:'GT-Series',name:'SuperScooter GT3',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1699',priceVal:1699,power:'1500W',powerPeak:'3000W',powerVal:2400,speed:'50',speedVal:50,
+   range:'72',rangeVal:72,weight:'39.5',weightVal:39.5,wheels:'11"',suspension:'Дуальная + маятник',
+   battery:'912Wh',batteryV:'48V',voltVal:48,capVal:912,cells:'EVE 26v',waterproof:'IPX6',load:'120 кг',charge:'~5ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://th.segway.com/cdn/shop/files/GT3_1200x1247_transparent_.1_1200x.png?v=1737441408',
+   cons:['Огромный вес','Нелегально в Европе','Мало отзывов','Очень дорогой ремонт']},
+  {id:'gt3pro',brand:'segway',series:'GT-Series',name:'GT3 Pro',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3500',priceVal:3500,power:'3500W',powerPeak:'7000W',powerVal:3500,speed:'80',speedVal:80,
+   range:'138',rangeVal:138,weight:'53',weightVal:53,wheels:'11"',suspension:'Гидравлика 2x',
+   battery:'2160Wh',batteryV:'72V',voltVal:72,capVal:2160,cells:'Bak',waterproof:'IPX6',load:'150 кг',charge:'~8ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://www.rideandglide.co.uk/wp-content/uploads/Segway-GT3-Pro-electric-scooter.png',
+   cons:['53 кг — не поднять','$3500+','Запрещён почти везде','0–48 км/ч за 3.9с — опасно без опыта']},
+
+  // ── XIAOMI ──────────────────────────────────────────────────────────────
+  {id:'mi4',brand:'xiaomi',series:'Scooter 4',name:'Xiaomi Scooter 4',tier:'entry',tierLabel:'Начальный',
+   price:'~$400',priceVal:400,power:'300W',powerPeak:'600W',powerVal:300,speed:'25',speedVal:25,
+   range:'35',rangeVal:35,weight:'16.3',weightVal:16.3,wheels:'10"',suspension:'Нет',
+   battery:'308Wh',batteryV:'36V',voltVal:36,capVal:308,cells:'Li-Ion',waterproof:'IPX4',load:'120 кг',charge:'~6ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://i05.appmifile.com/682_item_uk/13/08/2024/d628e4d46a8178b23498b6da5a1d8c40.png',
+   cons:['Нет подвески','Скромный запас хода','IPX4 — не для дождя','Слабо на подъёмах']},
+  {id:'mi4pro',brand:'xiaomi',series:'Scooter 4',name:'Xiaomi Scooter 4 Pro',tier:'mid',tierLabel:'Средний',
+   price:'~$600',priceVal:600,power:'350W',powerPeak:'700W',powerVal:350,speed:'25',speedVal:25,
+   range:'55',rangeVal:55,weight:'17',weightVal:17,wheels:'10"',suspension:'Нет',
+   battery:'446Wh',batteryV:'42V',voltVal:42,capVal:446,cells:'Li-Ion',waterproof:'IPX4',load:'120 кг',charge:'~8–9ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://i02.appmifile.com/144_item_ae/09/06/2025/edc5c621329ff750a1b7ef93154244f5.png',
+   cons:['Нет подвески','Долгая зарядка 8–9ч','IPX4 — слабая защита','Скорость ограничена 25 км/ч']},
+  {id:'mi4pro2',brand:'xiaomi',series:'Scooter 4',name:'Xiaomi 4 Pro 2nd Gen',tier:'mid',tierLabel:'Средний',
+   price:'~$700',priceVal:700,power:'500W',powerPeak:'1000W',powerVal:500,speed:'25',speedVal:25,
+   range:'60',rangeVal:60,weight:'18',weightVal:18,wheels:'10"',suspension:'Нет',
+   battery:'474Wh',batteryV:'48V',voltVal:48,capVal:474,cells:'Li-Ion',waterproof:'IPX5',load:'120 кг',charge:'~6ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://lh7-rt.googleusercontent.com/docsz/AD_4nXfQz_cyAIfApPAyAbub1CGFh3uoqSpyX_Z0an6FtpAWCjSCfUJpE4iJo5Ua8jL_MSbE-XMmDmAquN8kK3gQs11GWcueryCZ9mfsMmXOdsFbTr8XI6pCxuvmmKRg0uolI_AEyn_D?key=N_x2qg5jFDibArk_eb409A',
+   cons:['Всё ещё нет подвески','Скорость 25 км/ч — ограничена','Тяжелее базовой 4 Pro','Запасные части — дефицит']},
+  {id:'mi4ultra',brand:'xiaomi',series:'Scooter 4',name:'Xiaomi Scooter 4 Ultra',tier:'high',tierLabel:'Продвинутый',
+   price:'~$900',priceVal:900,power:'500W',powerPeak:'940W',powerVal:500,speed:'25',speedVal:25,
+   range:'70',rangeVal:70,weight:'24.5',weightVal:24.5,wheels:'10"',suspension:'Дуальная',
+   battery:'561Wh',batteryV:'48V',voltVal:48,capVal:561,cells:'Li-Ion',waterproof:'IP55',load:'120 кг',charge:'~6.5ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://www.digitec.ch/productimages/6/8/5/6/7/6/4/0/2/2/2/3/0/0/5/1/1/8/4/93f08789-8474-4660-bbb0-3d8c08ea50b9_cropped.png',
+   cons:['Скорость ограничена 25 км/ч','Тяжёлый — 24.5 кг','Дорогой ремонт подвески','Цена высока для 25 км/ч']},
+
+  // ── KUGOO ──────────────────────────────────────────────────────────────
+  {id:'kg2pro',brand:'kugoo',series:'G-Series',name:'Kugoo G2 Pro',tier:'mid',tierLabel:'Средний',
+   price:'~$450',priceVal:450,power:'800W',powerPeak:'1600W',powerVal:800,speed:'45',speedVal:45,
+   range:'50',rangeVal:50,weight:'25',weightVal:25,wheels:'9"',suspension:'Передняя и задняя',
+   battery:'624Wh',batteryV:'48V',voltVal:48,capVal:624,cells:'18650 Li-Ion',waterproof:'IPX4',load:'130 кг',charge:'~5–6ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://www.holaty.com/cdn/shop/products/KUGOOG2PROOffroadElectricScooter_1_68d556b3-b6c9-4a2b-b58d-cd89d472f1ac.png?v=1662213908',
+   cons:['Шарнир складывания со временем разбалтывается','IPX4 — слабая защита от воды','Нет официального сервиса в РФ/СНГ','Зарядный порт у колеса — собирает грязь']},
+  {id:'kgbooster',brand:'kugoo',series:'G-Series',name:'Kugoo G-Booster',tier:'high',tierLabel:'Продвинутый',
+   price:'~$700',priceVal:700,power:'1600W',powerPeak:'1600W',powerVal:1600,speed:'55',speedVal:55,
+   range:'85',rangeVal:85,weight:'30',weightVal:30,wheels:'10"',suspension:'Нет',
+   battery:'1104Wh',batteryV:'48V',voltVal:48,capVal:1104,cells:'Неизвестно',waterproof:'Неизвестно',load:'120 кг',charge:'~10ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://kugoo-russia.com/assets/components/phpthumbof/cache/kugoo-g-booster1615276802kugoo_g_booster_001.b08f6bff892ccf3e50c78e4ee7eb5529.png',
+   cons:['Очень долгая зарядка ~10ч','Нет подвески при весе 30 кг','Защита от влаги не указана','Дефицит запчастей в Европе']},
+  {id:'km2pro',brand:'kugoo',series:'M-Series',name:'Kugoo M2 Pro',tier:'entry',tierLabel:'Начальный',
+   price:'~$250',priceVal:250,power:'350W',powerPeak:'700W',powerVal:350,speed:'30',speedVal:30,
+   range:'30',rangeVal:30,weight:'13.8',weightVal:13.8,wheels:'8.5"',suspension:'Двойная',
+   battery:'270Wh',batteryV:'36V',voltVal:36,capVal:270,cells:'Li-Ion',waterproof:'IPX4',load:'120 кг',charge:'~3–4ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://kugoo-russia.com/assets/components/phpthumbof/cache/kugoo-m2-pro1615295855kugooM2pro-2.f24387636fc5e87479e58c1c01780aa1.png',
+   cons:['Слабый реальный пробег ~22–25 км','IPX4 — избегать дождя','Шумный мотор','Зарядный порт не защищён от воды']},
+  {id:'ks3pro',brand:'kugoo',series:'S-Series',name:'Kugoo S3 Pro',tier:'entry',tierLabel:'Начальный',
+   price:'~$200',priceVal:200,power:'350W',powerPeak:'500W',powerVal:350,speed:'25',speedVal:25,
+   range:'30',rangeVal:30,weight:'12',weightVal:12,wheels:'8"',suspension:'Нет',
+   battery:'270Wh',batteryV:'36V',voltVal:36,capVal:270,cells:'7.5Ah Li-Ion',waterproof:'IPX4',load:'100 кг',charge:'~3.5ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://kugoo-russia.com/assets/components/phpthumbof/cache/kugoo-s3-pro1615447448KugooS3Pro-3.eaaf098f89a13c3b0f7b5f73d4ad5c24.png',
+   cons:['Нет подвески — маленькие колёса очень жёстко','Слабый запас хода 30 км','Ненадёжный складной шарнир','Нет подсветки колёс']},
+
+  // ── KUKIRIN ─────────────────────────────────────────────────────────────
+  {id:'kkg2',brand:'kukirin',series:'G-Series',name:'KuKirin G2',tier:'mid',tierLabel:'Средний',
+   price:'~$550',priceVal:550,power:'500W',powerPeak:'800W',powerVal:500,speed:'40',speedVal:40,
+   range:'45',rangeVal:45,weight:'24',weightVal:24,wheels:'9"',suspension:'Пружинная 2x',
+   battery:'576Wh',batteryV:'48V',voltVal:48,capVal:576,cells:'12Ah Li-Ion',waterproof:'Неизвестно',load:'120 кг',charge:'~5ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://www.newtechstore.eu/wp-content/uploads/2024/09/KuKirin-G2-Electric-Scooter.webp',
+   cons:['Базовая версия — слабее G2 Pro по всем пунктам','9" колёса','Класс защиты от воды не раскрыт','Не самый длинный реальный пробег']},
+  {id:'kkg2pro',brand:'kukirin',series:'G-Series',name:'KuKirin G2 Pro',tier:'mid',tierLabel:'Средний',
+   price:'~$650',priceVal:650,power:'600W',powerPeak:'1000W',powerVal:600,speed:'45',speedVal:45,
+   range:'58',rangeVal:58,weight:'25',weightVal:25,wheels:'9"',suspension:'Пружинная 2x',
+   battery:'748Wh',batteryV:'48V',voltVal:48,capVal:748,cells:'15.6Ah Li-Ion',waterproof:'Неизвестно',load:'120 кг',charge:'~6ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://kukirinscootercanada.com/cdn/shop/files/6.png?v=1691706191&width=1946',
+   cons:['9" колёса — хуже на ямах чем 10–11"','Класс защиты от воды не раскрыт','Складной механизм требует ухода','Сервис только через ЕС-склад (Польша)']},
+  {id:'kkg2master',brand:'kukirin',series:'G-Series',name:'KuKirin G2 Master Dual',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1100',priceVal:1100,power:'2x1000W',powerPeak:'2400W',powerVal:1000,speed:'60',speedVal:60,
+   range:'70',rangeVal:70,weight:'30',weightVal:30,wheels:'10"',suspension:'Дуальная',
+   battery:'1082Wh',batteryV:'52V',voltVal:52,capVal:1082,cells:'EVE 26E',waterproof:'Неизвестно',load:'150 кг',charge:'~8ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://www.kugookirineu.com/cdn/shop/files/0N9A6254_1080x.png?v=1773395188',
+   cons:['60 км/ч требует прав/категории во многих странах','Тяжелый — 30 кг','Мало независимых обзоров','Долгая зарядка ~8ч']},
+  {id:'kkg2ultra',brand:'kukirin',series:'G-Series',name:'KuKirin G2 Ultra Dual',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1300',priceVal:1300,power:'2x1200W',powerPeak:'2800W',powerVal:1200,speed:'62',speedVal:62,
+   range:'75',rangeVal:75,weight:'32',weightVal:32,wheels:'10"',suspension:'Дуальная гидравлика',
+   battery:'1166Wh',batteryV:'52V',voltVal:52,capVal:1166,cells:'22.4Ah Li-Ion',waterproof:'Неизвестно',load:'150 кг',charge:'~8ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'',
+   cons:['Тяжелее G2 Master — 32 кг','62 км/ч — для опытных райдеров','Цена близка к топовым моделям','Долгая зарядка ~8ч']},
+  {id:'kkg3pro',brand:'kukirin',series:'G-Series',name:'KuKirin G3 Pro Dual',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1300',priceVal:1300,power:'2x1200W',powerPeak:'3000W',powerVal:1200,speed:'65',speedVal:65,
+   range:'80',rangeVal:80,weight:'39.6',weightVal:39.6,wheels:'10"',suspension:'Рычажная (4 точки)',
+   battery:'1196Wh',batteryV:'52V',voltVal:52,capVal:1196,cells:'23Ah Li-Ion',waterproof:'Неизвестно',load:'150 кг',charge:'~9–10ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://scootarea.ge/img/content/01_59ec29f7-8104-422a-b93e-a76c5740630a__04_21_2025_image1753980727.webp',
+   cons:['39.6 кг — почти невозможно нести','65 км/ч — требует шлема и опыта','Очень долгая зарядка 9–10ч','Запчасти редкие, везут с базы в Гонконге']},
+  {id:'kkg4',brand:'kukirin',series:'G-Series',name:'KuKirin G4',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1400',priceVal:1400,power:'2000W',powerPeak:'2400W',powerVal:2000,speed:'70',speedVal:70,
+   range:'75',rangeVal:75,weight:'41.5',weightVal:41.5,wheels:'11"',suspension:'Пружинная 2x',
+   battery:'1200Wh',batteryV:'60V',voltVal:60,capVal:1200,cells:'20Ah Li-Ion',waterproof:'Неизвестно',load:'150 кг',charge:'~9ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'',
+   cons:['70 км/ч на 11" колёсах — опасно без опыта','41.5 кг — только для перевозки на колёсах','Высокое напряжение 60V — сложный ремонт','Почти нет официальных сервисов вне ЕС']},
+  {id:'kkg4max',brand:'kukirin',series:'G-Series',name:'KuKirin G4 Max Dual',tier:'super',tierLabel:'SuperScooter',
+   price:'~$2200',priceVal:2200,power:'2x1600W',powerPeak:'4000W',powerVal:1600,speed:'86',speedVal:86,
+   range:'95',rangeVal:95,weight:'64',weightVal:64,wheels:'12"',suspension:'Пружинная 2x',
+   battery:'2112Wh',batteryV:'60V',voltVal:60,capVal:2112,cells:'35.2Ah Li-Ion',waterproof:'Неизвестно',load:'150 кг',charge:'~12ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'',
+   cons:['64 кг — мото-класс, не самокат для города','86 км/ч — почти везде нелегально','Огромная батарея — зарядка ~12ч','Купить и обслужить вне Европы — квест']},
+
+  // ── KAABO ───────────────────────────────────────────────────────────────
+  {id:'kb_sky8h',brand:'kaabo',series:'Skywalker',name:'Kaabo Skywalker 8H',tier:'entry',tierLabel:'Начальный',
+   price:'~$600',priceVal:600,power:'500W',powerPeak:'1000W',powerVal:500,speed:'38',speedVal:38,
+   range:'45',rangeVal:45,weight:'20',weightVal:20,wheels:'8"',suspension:'Пружинная 2x',
+   battery:'624Wh',batteryV:'48V',voltVal:48,capVal:624,cells:'Li-Ion',waterproof:'IPX4',load:'120 кг',charge:'~6ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Skywalker-8s.png',
+   cons:['Маленькие колеса 8 дюймов','Слабая амортизация на сильных кочках','Устаревший дизайн','Барабанный задний тормоз']},
+   
+  {id:'kb_mantis8_lite',brand:'kaabo',series:'Mantis',name:'Kaabo Mantis 8 Lite',tier:'mid',tierLabel:'Средний',
+   price:'~$950',priceVal:950,power:'800W',powerPeak:'1600W',powerVal:800,speed:'40',speedVal:40,
+   range:'50',rangeVal:50,weight:'25',weightVal:25,wheels:'8"',suspension:'Рычажная',
+   battery:'873Wh',batteryV:'48V',voltVal:48,capVal:873,cells:'18.2Ah',waterproof:'IPX5',load:'120 кг',charge:'~6-7ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Mantis-8.png',
+   cons:['Широкие, но маленькие 8" колеса','Слабая шейка руля (требует усиленного хомута)','Тяжеловат для своих габаритов (25 кг)']},
+
+  {id:'kb_mantis10_plus',brand:'kaabo',series:'Mantis',name:'Kaabo Mantis 10 Plus',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1450',priceVal:1450,power:'2x1000W',powerPeak:'3200W',powerVal:2000,speed:'60',speedVal:60,
+   range:'75',rangeVal:75,weight:'30',weightVal:30,wheels:'10"',suspension:'Рычажная эластомерная',
+   battery:'1092Wh',batteryV:'60V',voltVal:60,capVal:1092,cells:'18.2Ah',waterproof:'IPX5',load:'120 кг',charge:'~9ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Mantis-10.png',
+   cons:['Болезнь ломающегося болта рулевой колонки (в старых ревизиях)','Скрип эластомеров со временем','Долгая зарядка одним ЗУ']},
+
+  {id:'kb_mantis_king_gt',brand:'kaabo',series:'Mantis',name:'Kaabo Mantis King GT',tier:'super',tierLabel:'SuperScooter',
+   price:'~$2200',priceVal:2200,power:'2x1100W',powerPeak:'4000W',powerVal:2200,speed:'70',speedVal:70,
+   range:'90',rangeVal:90,weight:'33',weightVal:33,wheels:'10"',suspension:'Регулируемая гидравлика',
+   battery:'1440Wh',batteryV:'60V',voltVal:60,capVal:1440,cells:'Samsung 24Ah',waterproof:'IPX5',load:'120 кг',charge:'~6ч (2 ЗУ)',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://www.kaabo.com/wp-content/uploads/2023/05/kaabo-Mantis-King-GT-–-1.png',
+   cons:['Высокий крутящий момент со старта (резкий)','Громкая работа моторов Sine-Wave','Требует частой протяжки винтов подвески']},
+
+  {id:'kb_wolf_x_plus',brand:'kaabo',series:'Wolf',name:'Kaabo Wolf Warrior X Plus',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1500',priceVal:1500,power:'2x1100W',powerPeak:'4000W',powerVal:2200,speed:'70',speedVal:70,
+   range:'70',rangeVal:70,weight:'37',weightVal:37,wheels:'10"',suspension:'Мотовилка + пружины',
+   battery:'1260Wh',batteryV:'60V',voltVal:60,capVal:1260,cells:'21Ah',waterproof:'IPX5',load:'120 кг',charge:'~10ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://www.kaabo.com/wp-content/uploads/2023/05/Kaabo-Wolf-Warrior-X.png',
+   cons:['Узкий руль для таких скоростей','Тяжелый для 10-дюймового класса (37 кг)','Низкий клиренс деки','Громоздкая мотовилка']},
+
+  {id:'kb_wolf_11_plus',brand:'kaabo',series:'Wolf',name:'Kaabo Wolf Warrior 11 Plus',tier:'super',tierLabel:'SuperScooter',
+   price:'~$2350',priceVal:2350,power:'2x1200W',powerPeak:'5400W',powerVal:2400,speed:'80',speedVal:80,
+   range:'100',rangeVal:100,weight:'46',weightVal:46,wheels:'11"',suspension:'Мотовилка + пружины',
+   battery:'1560Wh',batteryV:'60V',voltVal:60,capVal:1560,cells:'26Ah',waterproof:'IPX5',load:'150 кг',charge:'~14ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Wolf-Warrior-11.png',
+   cons:['Очень тяжелый — 46 кг','Квадратные контроллеры делают газ очень дерганым','Габариты не для квартиры и лифта']},
+
+  {id:'kb_wolf_king_gt_pro',brand:'kaabo',series:'Wolf',name:'Kaabo Wolf King GT Pro',tier:'super',tierLabel:'SuperScooter',
+   price:'~$2700',priceVal:2700,power:'2x2000W',powerPeak:'8400W',powerVal:4000,speed:'100',speedVal:100,
+   range:'150',rangeVal:150,weight:'52',weightVal:52,wheels:'11"',suspension:'Мотовилка + пружины',
+   battery:'2520Wh',batteryV:'72V',voltVal:72,capVal:2520,cells:'LG/Samsung 35Ah',waterproof:'IPX5',load:'150 кг',charge:'~12ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Wolf-King-Gt.png',
+   cons:['52 кг — физически тяжело поднять даже вдвоем','Опасная скорость до 100 км/ч (только в экипировке)','Проблемы с гидроизоляцией TFT-дисплея']},
+
+  {id:'kb_wolf_king_gtr',brand:'kaabo',series:'Wolf',name:'Kaabo Wolf King GTR',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3100',priceVal:3100,power:'2x2000W',powerPeak:'10000W',powerVal:4000,speed:'105',speedVal:105,
+   range:'110',rangeVal:110,weight:'62',weightVal:62,wheels:'12"',suspension:'Мотовилка + гидравлика',
+   battery:'2520Wh',batteryV:'72V',voltVal:72,capVal:2520,cells:'Съёмная батарея 35Ah',waterproof:'IPX5',load:'150 кг',charge:'~10ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://www.kaabo.com/wp-content/themes/kaabo/images/Kaabo-Wolf-Warrior-11MAX.png',
+   cons:['Вес 62 кг — это мотоцикл','Очень дорогие комплектующие (контроллер, съёмная АКБ)','Сложное обслуживание вилки 12"']},
+
+  // ── DUALTRON ────────────────────────────────────────────────────────────
+    // ── DUALTRON (Расширенная линейка 2026) ──────────────────────────────────
+  {id:'dt_togo',brand:'dualtron',series:'Togo',name:'Dualtron Togo',tier:'entry',tierLabel:'Начальный',
+   price:'~$1100',priceVal:1100,power:'450W',powerPeak:'850W',powerVal:850,speed:'40',speedVal:40,
+   range:'40',rangeVal:40,weight:'21',weightVal:21,wheels:'9"',suspension:'Пружинная',
+   battery:'550Wh',batteryV:'48V',voltVal:48,capVal:550,cells:'Li-Ion',waterproof:'IPX5',load:'100 кг',charge:'~5ч',
+   repair:4,repairTxt:'Легкая',photo:'https://minimotorsusa.com/cdn/shop/files/Dualtron-Togo-Black.png',
+   cons:['Базовая модель','Маленький запас хода','Только задний привод']},
+
+  {id:'dt_mini_special',brand:'dualtron',series:'Mini',name:'Dualtron Mini Special',tier:'entry',tierLabel:'Начальный',
+   price:'~$1300',priceVal:1300,power:'500W',powerPeak:'1450W',powerVal:1450,speed:'45',speedVal:45,
+   range:'50',rangeVal:50,weight:'23',weightVal:23,wheels:'9"',suspension:'Пружинная',
+   battery:'768Wh',batteryV:'52V',voltVal:52,capVal:768,cells:'Li-Ion',waterproof:'IPX5',load:'100 кг',charge:'~6ч',
+   repair:4,repairTxt:'Легкая',photo:'https://minimotorsusa.com/cdn/shop/files/Mini-Special.png',
+   cons:['Задний привод','Жесткая подвеска','Устаревший складной механизм']},
+
+  {id:'dt_spider_max',brand:'dualtron',series:'Spider',name:'Dualtron Spider Max',tier:'mid',tierLabel:'Средний',
+   price:'~$2100',priceVal:2100,power:'2x1500W',powerPeak:'4000W',powerVal:3000,speed:'70',speedVal:70,
+   range:'80',rangeVal:80,weight:'30',weightVal:30,wheels:'10"',suspension:'Регулируемая картриджная',
+   battery:'1440Wh',batteryV:'60V',voltVal:60,capVal:1440,cells:'LG 24Ah',waterproof:'IPX5',load:'120 кг',charge:'~8ч',
+   repair:3,repairTxt:'Средняя',photo:'https://minimotorsusa.com/cdn/shop/files/Spider-Max.png',
+   cons:['Специфическая хрупкая рулевая','Требует аккуратной эксплуатации']},
+
+  {id:'dt_victor_luxury',brand:'dualtron',series:'Victor',name:'Dualtron Victor Luxury',tier:'high',tierLabel:'Продвинутый',
+   price:'~$2400',priceVal:2400,power:'2x2000W',powerPeak:'4300W',powerVal:4000,speed:'85',speedVal:85,
+   range:'90',rangeVal:90,weight:'33',weightVal:33,wheels:'10"',suspension:'Регулируемая картриджная',
+   battery:'1800Wh',batteryV:'60V',voltVal:60,capVal:1800,cells:'LG 30Ah',waterproof:'IPX5',load:'120 кг',charge:'~9ч',
+   repair:3,repairTxt:'Средняя',photo:'https://minimotorsusa.com/cdn/shop/files/Victor-Luxury.png',
+   cons:['Скрипучие картриджи','Нужна гидроизоляция']},
+
+  {id:'dt_thunder_3',brand:'dualtron',series:'Thunder',name:'Dualtron Thunder 3',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3800',priceVal:3800,power:'2x2700W',powerPeak:'7000W',powerVal:5400,speed:'100',speedVal:100,
+   range:'120',rangeVal:120,weight:'45',weightVal:45,wheels:'11"',suspension:'Регулируемая картриджная',
+   battery:'2520Wh',batteryV:'72V',voltVal:72,capVal:2520,cells:'LG 35Ah',waterproof:'IPX5',load:'150 кг',charge:'~10ч',
+   repair:2,repairTxt:'Сложная',photo:'https://minimotorsusa.com/cdn/shop/files/Thunder-3.png',
+   cons:['Громоздкий','Сложный в обслуживании дисплей EY4']},
+
+  {id:'dt_ultra_2_up',brand:'dualtron',series:'Ultra',name:'Dualtron Ultra 2 Upgrade',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3900',priceVal:3900,power:'2x3300W',powerPeak:'8000W',powerVal:6600,speed:'100',speedVal:100,
+   range:'130',rangeVal:130,weight:'40',weightVal:40,wheels:'11"',suspension:'Пружинная',
+   battery:'2520Wh',batteryV:'72V',voltVal:72,capVal:2520,cells:'LG 35Ah',waterproof:'IPX5',load:'150 кг',charge:'~11ч',
+   repair:2,repairTxt:'Сложная',photo:'https://minimotorsusa.com/cdn/shop/files/Ultra-2-Up.png',
+   cons:['Шумная резина','Жесткий для города']},
+
+  {id:'dt_sonic_alien',brand:'dualtron',series:'Sonic',name:'Dualtron Sonic Alien',tier:'super',tierLabel:'SuperScooter',
+   price:'~$4500',priceVal:4500,power:'2x2500W',powerPeak:'11200W',powerVal:5000,speed:'110',speedVal:110,
+   range:'125',rangeVal:125,weight:'48',weightVal:48,wheels:'11"',suspension:'Гидравлическая',
+   battery:'2880Wh',batteryV:'72V',voltVal:72,capVal:2880,cells:'Samsung 40Ah',waterproof:'IPX5',load:'150 кг',charge:'~7ч',
+   repair:1,repairTxt:'Очень сложная',photo:'https://minimotorsusa.com/cdn/shop/files/Sonic-Alien.png',
+   cons:['Цена','Избыточная мощность']},
+
+  {id:'dt_x_limited',brand:'dualtron',series:'X',name:'Dualtron X Limited',tier:'hyper',tierLabel:'HyperScooter',
+   price:'~$6500',priceVal:6500,power:'2x4000W',powerPeak:'12000W',powerVal:8000,speed:'110',speedVal:110,
+   range:'200',rangeVal:200,weight:'83',weightVal:83,wheels:'13"',suspension:'Регулируемая гидравлика',
+   battery:'4320Wh',batteryV:'84V',voltVal:84,capVal:4320,cells:'LG 60Ah',waterproof:'IPX5',load:'150 кг',charge:'~8ч (2x)',
+   repair:1,repairTxt:'Экстремально сложная',photo:'https://minimotorsusa.com/cdn/shop/files/X-Limited.png',
+   cons:['Вес 83 кг (не для квартир)','Стоимость обслуживания','Габариты']},
+
+  // ── NAMI ────────────────────────────────────────────────────────────────
+  {id:'nami_klima',brand:'nami',series:'Klima',name:'Nami Klima',tier:'super',tierLabel:'SuperScooter',
+   price:'~$2000',priceVal:2000,power:'2x1000W',powerPeak:'5000W',powerVal:2000,speed:'65',speedVal:65,
+   range:'65',rangeVal:65,weight:'36',weightVal:36,wheels:'10"',suspension:'KKE Гидравлика (регулир.)',
+   battery:'1500Wh',batteryV:'60V',voltVal:60,capVal:1500,cells:'LG 21700',waterproof:'IP55',load:'120 кг',charge:'~5ч',
+   repair:2,repairTxt:'Сложная',
+   photo:'https://namielectric.com/wp-content/uploads/2023/02/Klima-Profil.png',
+   cons:['Тяжелее конкурентов в классе 10 дюймов','Дорогие оригинальные запчасти','Габариты шире обычного','Сложности с настройкой контроллеров Sine Wave']},
+  {id:'nami_burn_e2_max',brand:'nami',series:'Burn-E',name:'Nami Burn-E 2 Max',tier:'super',tierLabel:'SuperScooter',
+   price:'~$3500',priceVal:3500,power:'2x1500W',powerPeak:'8400W',powerVal:3000,speed:'95',speedVal:95,
+   range:'115',rangeVal:115,weight:'47',weightVal:47,wheels:'11"',suspension:'KKE Гидравлика 165мм',
+   battery:'2304Wh',batteryV:'72V',voltVal:72,capVal:2304,cells:'LG/Panasonic 21700',waterproof:'IP55',load:'150 кг',charge:'~6ч',
+   repair:1,repairTxt:'Очень сложная',
+   photo:'https://namielectric.com/wp-content/uploads/2022/10/NAMI-BURN-E-2-MAX.png',
+   cons:['Огромный вес и размер','Слабая сварка на рулевой колонке (в ранних версиях)','Огромная цена','Трудно найти сервис']},
+
+  // ── VSETT ───────────────────────────────────────────────────────────────
+  {id:'vsett_10plus',brand:'vsett',series:'10-Series',name:'VSETT 10+',tier:'super',tierLabel:'SuperScooter',
+   price:'~$1800',priceVal:1800,power:'2x1400W',powerPeak:'4200W',powerVal:2800,speed:'80',speedVal:80,
+   range:'90',rangeVal:90,weight:'36',weightVal:36,wheels:'10"',suspension:'Пружинно-гидравлическая',
+   battery:'1536Wh',batteryV:'60V',voltVal:60,capVal:1536,cells:'LG',waterproof:'IP54',load:'130 кг',charge:'~10ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://vsett-shop.com/wp-content/uploads/2021/01/VSETT-10-1.png',
+   cons:['Острый, резкий газ (квадратные контроллеры)','Штатные шины легко прокалываются','Тяжеловат для 10" (36 кг)','Амортизаторы требуют обслуживания']},
+
+  // ── APOLLO ──────────────────────────────────────────────────────────────
+  {id:'apollo_city_pro',brand:'apollo',series:'City',name:'Apollo City Pro (2023)',tier:'high',tierLabel:'Продвинутый',
+   price:'~$1500',priceVal:1500,power:'2x500W',powerPeak:'2000W',powerVal:1000,speed:'51',speedVal:51,
+   range:'61',rangeVal:61,weight:'29.5',weightVal:29.5,wheels:'10"',suspension:'Пружинная',
+   battery:'864Wh',batteryV:'48V',voltVal:48,capVal:864,cells:'21700',waterproof:'IP66',load:'120 кг',charge:'~4.5ч',
+   repair:3,repairTxt:'Средняя',
+   photo:'https://apolloscooters.co/cdn/shop/files/City_Pro_Profile.png',
+   cons:['Тяжелый для городских задач (29.5 кг)','Приложение иногда теряет связь','Несъемная батарея','Пружинная подвеска жестковата']},
+  
+  // ── NIU ─────────────────────────────────────────────────────────────────
+  {id:'niu_kqi3_max',brand:'niu',series:'KQi',name:'NIU KQi3 Max',tier:'mid',tierLabel:'Средний',
+   price:'~$900',priceVal:900,power:'450W',powerPeak:'900W',powerVal:450,speed:'38',speedVal:38,
+   range:'65',rangeVal:65,weight:'21',weightVal:21,wheels:'9.5"',suspension:'Нет',
+   battery:'608Wh',batteryV:'48V',voltVal:48,capVal:608,cells:'Li-Ion',waterproof:'IP54',load:'120 кг',charge:'~8ч',
+   repair:4,repairTxt:'Хорошая',
+   photo:'https://shop.niu.com/cdn/shop/products/KQi3Max-SpaceGrey-1.png',
+   cons:['Нет амортизации','Широкий руль (не складывается)','Долгая зарядка (8 часов)','Нестандартный размер шин (9.5")']}
+];
+
+let selected = [];
+let activeBrand = 'all';
+
+function repColor(n){
+  const stops = ['#ff5d6c','#ff9f5b','#ffc857','#9bd86b','#3ddc84'];
+  return stops[Math.max(0,Math.min(4,n-1))];
+}
+function tcls(t){return {entry:'tier-entry',mid:'tier-mid',high:'tier-high',super:'tier-super'}[t];}
+function stars(n){
+  let h='';
+  const c = repColor(n);
+  for(let i=1;i<=5;i++){
+    h += `<div class="star" style="background:${i<=n?c:'var(--border)'}"></div>`;
+  }
+  return h;
+}
+function repairTextColor(n){ return repColor(n); }
+
+function buildBrandBar(){
+  const counts={};
+  SCOOTERS.forEach(s=>{counts[s.brand]=(counts[s.brand]||0)+1;});
+  let h=`<div class="brand-chip ${activeBrand==='all'?'active':''}" onclick="setBrand('all')">
+    <div class="brand-logo-box text">ALL</div>
+    <div class="brand-meta"><span class="brand-name">Все бренды</span><span class="brand-count">${SCOOTERS.length} моделей</span></div>
+  </div>`;
+  Object.keys(BRANDS).forEach(k=>{
+    const b=BRANDS[k];
+    const cnt=counts[k]||0;
+    const logoBox = b.logo
+      ? `<div class="brand-logo-box"><img src="${b.logo}" alt="${b.name}" onerror="this.parentElement.outerHTML='<div class=&quot;brand-logo-box text&quot;>${b.name.slice(0,2).toUpperCase()}</div>'"></div>`
+      : `<div class="brand-logo-box text">${b.name.slice(0,2).toUpperCase()}</div>`;
+    h+=`<div class="brand-chip ${activeBrand===k?'active':''}" onclick="setBrand('${k}')">
+      ${logoBox}
+      <div class="brand-meta"><span class="brand-name">${b.name}</span><span class="brand-count">${cnt} модел${cnt===1?'ь':cnt<5&&cnt!==0?'и':'ей'}</span></div>
+    </div>`;
+  });
+  document.getElementById('brandChips').innerHTML=h;
+}
+function setBrand(b){activeBrand=b;buildBrandBar();applyFilters();}
+
+function toggleAdv(id,btn){
+  const popup=document.getElementById(id);
+  const wasOpen=popup.classList.contains('open');
+  document.querySelectorAll('.adv-popup').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.adv-toggle').forEach(t=>t.classList.remove('open'));
+  if(!wasOpen){popup.classList.add('open');btn.classList.add('open');}
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.filter-group') && !e.target.closest('.vfilter-group')){
+    document.querySelectorAll('.adv-popup').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('.adv-toggle').forEach(t=>t.classList.remove('open'));
+  }
+});
+
+function getFiltered(){
+  const v=id=>{const x=document.getElementById(id).value;return x===''?null:+x;};
+  const pMin=v('fPowerMin')??0, pMax=v('fPowerMax')??Infinity;
+  const sMin=v('fSpeedMin')??0, sMax=v('fSpeedMax')??Infinity;
+  const wMin=v('fWeightMin')??0, wMax=v('fWeightMax')??Infinity;
+  const rMin=v('fRangeMin')??0, rMax=v('fRangeMax')??Infinity;
+  const vMin=v('fVoltMin')??0, vMax=v('fVoltMax')??Infinity;
+  const cMin=v('fCapMin')??0, cMax=v('fCapMax')??Infinity;
+  const repMin=v('fRepairMin')??0;
+  const query=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  return SCOOTERS.filter(s=>{
+    if(activeBrand!=='all'&&s.brand!==activeBrand) return false;
+    if(s.powerVal<pMin||s.powerVal>pMax) return false;
+    if(s.speedVal<sMin||s.speedVal>sMax) return false;
+    if(s.weightVal<wMin||s.weightVal>wMax) return false;
+    if(s.rangeVal<rMin||s.rangeVal>rMax) return false;
+    if(s.voltVal<vMin||s.voltVal>vMax) return false;
+    if(s.capVal<cMin||s.capVal>cMax) return false;
+    if(s.repair<repMin) return false;
+    if(query&&!s.name.toLowerCase().includes(query)&&!s.series.toLowerCase().includes(query)) return false;
+    return true;
+  });
+}
+
+function applyFilters(){
+  const filtered=getFiltered();
+  document.getElementById('filterResults').textContent=`Найдено: ${filtered.length} из ${SCOOTERS.length}`;
+  renderCatalog(filtered);
+}
+
+function resetFilters(){
+  ['fPowerMin','fPowerMax','fSpeedMin','fSpeedMax','fWeightMin','fWeightMax','fRangeMin','fRangeMax',
+   'fVoltMin','fVoltMax','fCapMin','fCapMax','fRepairMin'].forEach(id=>document.getElementById(id).value='');
+  activeBrand='all';
+  buildBrandBar();
+  applyFilters();
+}
+
+function renderCatalog(list){
+  const c=document.getElementById('catalog');
+  if(!list||!list.length){c.innerHTML='<div class="no-results">😕 Нет самокатов по заданным параметрам. Попробуй ослабить фильтры.</div>';return;}
+  const bLogo=(brand)=>{
+    const b=BRANDS[brand];
+    if(!b) return '';
+    if(!b.logo) return `<div class="photo-brand"><span>${b.name}</span></div>`;
+    return `<div class="photo-brand"><img src="${b.logo}" alt="${b.name}" onerror="this.parentElement.innerHTML='<span>${b.name}</span>'"></div>`;
+  };
+  c.innerHTML=list.map(s=>{
+    const sel=selected.includes(s.id);
+    const rc=repairTextColor(s.repair);
+    return `<div class="card ${sel?'selected':''}">
+      <div class="card-photo" onclick="this.closest('.card').classList.toggle('zoomed')" style="cursor: pointer;">
+        <img src="${s.photo}" alt="${s.name}" onerror="this.src='https://placehold.co/300x150/1b202e/5b8cff?text=${encodeURIComponent(s.name)}'">
+        ${bLogo(s.brand)}
+        <span class="photo-tier ${tcls(s.tier)}">${s.tierLabel}</span>
+      </div>
+      <div class="card-hd">
+        <div class="card-series">${s.series}</div>
+        <div class="card-name">${s.name}</div>
+      </div>
+      <div class="key-specs">
+        <div class="ks"><div class="ks-lbl">Мощность</div><div class="ks-val">${s.power}<span class="ks-u"> ном</span></div></div>
+        <div class="ks"><div class="ks-lbl">Скорость</div><div class="ks-val">${s.speed}<span class="ks-u"> км/ч</span></div></div>
+        <div class="ks"><div class="ks-lbl">Пробег</div><div class="ks-val">${s.range}<span class="ks-u"> км</span></div></div>
+        <div class="ks"><div class="ks-lbl">Вес</div><div class="ks-val">${s.weight}<span class="ks-u"> кг</span></div></div>
+      </div>
+      <div class="extra">
+        <div class="er"><span class="er-l">Колёса</span><span class="er-v">${s.wheels}</span></div>
+        <div class="er"><span class="er-l">Батарея</span><span class="er-v">${s.battery}</span></div>
+        <div class="er"><span class="er-l">Напряжение</span><span class="er-v">${s.batteryV}</span></div>
+        <div class="er"><span class="er-l">Элементы</span><span class="er-v">${s.cells}</span></div>
+        <div class="er"><span class="er-l">Подвеска</span><span class="er-v" style="font-size:10px">${s.suspension}</span></div>
+        <div class="er"><span class="er-l">Защита</span><span class="er-v">${s.waterproof}</span></div>
+        <div class="er"><span class="er-l">Нагрузка</span><span class="er-v">${s.load}</span></div>
+        <div class="er"><span class="er-l">Зарядка</span><span class="er-v">${s.charge}</span></div>
+      </div>
+      <div class="repair">
+        <span class="repair-lbl">Ремонтопригодность</span>
+        <div class="stars">${stars(s.repair)}<span class="repair-txt" style="color:${rc}">${s.repairTxt}</span></div>
+      </div>
+      <div class="price-row">
+        <span class="price-lbl">Цена</span>
+        <span class="price-val">${s.price}</span>
+      </div>
+      <div class="cons">
+        <div class="cons-hd">Минусы из отзывов</div>
+        <ul class="cons-list">${s.cons.map(c=>`<li>${c}</li>`).join('')}</ul>
+      </div>
+      <button class="add-btn ${sel?'added':''}" onclick="toggle('${s.id}')">
+        ${sel?'✓ В сравнении':'+ Добавить в сравнение'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function toggle(id){
+  if(selected.includes(id)) selected=selected.filter(x=>x!==id);
+  else if(selected.length<4) selected.push(id);
+  applyFilters();
+  updateCompareBar();
+}
+
+function clearAll(){
+  selected=[];
+  applyFilters();
+  updateCompareBar();
+}
+
+function updateCompareBar(){
+  const bar=document.getElementById('compareBar');
+  document.getElementById('compareCount').textContent=selected.length;
+  document.getElementById('btnCompare').disabled=selected.length<2;
+  bar.classList.toggle('show',selected.length>0);
+}
+
+function openModal(){
+  const items=selected.map(id=>SCOOTERS.find(s=>s.id===id));
+  const rows=[
+    {l:'Бренд',fn:s=>BRANDS[s.brand]?.name||s.brand,t:'text'},
+    {l:'Серия',fn:s=>s.series,t:'text'},
+    {l:'Цена',fn:s=>s.price,t:'text'},
+    {l:'Мощность ном.',fn:s=>s.powerVal,u:'W',hi:true},
+    {l:'Мощность пик',fn:s=>parseInt(s.powerPeak)||s.powerVal*2,u:'W',hi:true},
+    {l:'Макс. скорость',fn:s=>s.speedVal,u:' км/ч',hi:true},
+    {l:'Пробег',fn:s=>s.rangeVal,u:' км',hi:true},
+    {l:'Вес',fn:s=>s.weightVal,u:' кг',hi:false},
+    {l:'Колёса',fn:s=>s.wheels,t:'text'},
+    {l:'Подвеска',fn:s=>s.suspension,t:'text'},
+    {l:'Батарея',fn:s=>s.battery,t:'text'},
+    {l:'Напряжение АКБ',fn:s=>s.batteryV,t:'text'},
+    {l:'Тип элементов',fn:s=>s.cells,t:'text'},
+    {l:'Защита',fn:s=>s.waterproof,t:'text'},
+    {l:'Нагрузка',fn:s=>s.load,t:'text'},
+    {l:'Зарядка',fn:s=>s.charge,t:'text'},
+    {l:'Ремонтопригодность',fn:s=>s.repairTxt,t:'text'},
+  ];
+  let h=`<thead><tr><th>Параметр</th>${items.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    h+=`<tr><td>${r.l}</td>`;
+    if(r.t==='text'){h+=items.map(s=>`<td>${r.fn(s)}</td>`).join('');}
+    else{
+      const vals=items.map(s=>r.fn(s));
+      const best=r.hi?Math.max(...vals):Math.min(...vals);
+      const worst=r.hi?Math.min(...vals):Math.max(...vals);
+      h+=items.map((s,i)=>{
+        const val=vals[i],cls=val===best?'best':(items.length>2&&val===worst?'worst':'');
+        return `<td class="${cls}">${val}${r.u||''}</td>`;
+      }).join('');
+    }
+    h+='</tr>';
+  });
+  h+=`<tr><td>Минусы</td>${items.map(s=>`<td class="cons-cell">${s.cons.map(c=>`· ${c}`).join('<br>')}</td>`).join('')}</tr></tbody>`;
+  document.getElementById('cmpTable').innerHTML=h;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+buildBrandBar();
+applyFilters();
+</script>
+</body>
+</html>
